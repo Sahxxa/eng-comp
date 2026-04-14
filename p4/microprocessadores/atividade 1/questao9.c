@@ -142,10 +142,12 @@ uint8_t seg[16] = {
 	  for(int n=0; n<16; n++){
 		  GPIOA->ODR = (GPIOA->ODR & ~(0x7F)) | seg[n];
 		  HAL_Delay(500);
- //adicionar o decremento
-
+		  }
+	  
+	  for (int n=15; n>=0; n--){
+		  GPIOA->ODR = (GPIOA->ODR & ~(0x7F)) | seg[n];
+		  HAL_Delay(500);
 	  }
-
 
 
     /* USER CODE END WHILE */
