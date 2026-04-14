@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Utility.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -36,8 +37,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define LIGA_BUZZER GPIOD->ODR |=1 <<5;
-#define DESLIGA_BUZZER GPIOD->ODR &= ~(1<<5);
+
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -90,57 +90,48 @@ int main(void)
   /* USER CODE BEGIN 2 */
   Utility_Init();
   GPIO_Clock_Enable(GPIOA);
-  GPIO_Pin_Mode(GPIOA, PIN_2, OUTPUT);
-  GPIO_Pin_Mode(GPIOA, PIN_3, OUTPUT);
-  GPIO_Pin_Mode(GPIOA, PIN_4, OUTPUT);
-
-
   GPIO_Clock_Enable(GPIOE);
-  GPIO_Pin_Mode(GPIOE, PIN_2, INPUT);
-  GPIO_Pin_Mode(GPIOE, PIN_3, INPUT);
-  GPIO_Pin_Mode(GPIOE, PIN_4, INPUT);
+  GPIO_Clock_Enable(GPIOD);
+
+  GPIO_Pin_Mode(GPIOA, PIN_0, INPUT); //K_UP
+  GPIO_Pin_Mode(GPIOE, PIN_3, INPUT); //k1
+  GPIO_Pin_Mode(GPIOE, PIN_4, INPUT); //k0
 
 
-  GPIO_Resistor_Enable(GPIOE, PIN_2, PULL_DOWN);
+  GPIO_Pin_Mode(GPIOA, PIN_6, OUTPUT); //D2
+  GPIO_Pin_Mode(GPIOA, PIN_7, OUTPUT); //D3
+  GPIO_Pin_Mode(GPIOD, PIN_0, OUTPUT); //led externo
+
+  GPIO_Resistor_Enable(GPIOA, PIN_0, PULL_DOWN);
   GPIO_Resistor_Enable(GPIOE, PIN_3, PULL_UP);
   GPIO_Resistor_Enable(GPIOE, PIN_4, PULL_UP);
+  //CONECTAR NO PINO PD0
 
   /* USER CODE END 2 */
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
-  { //lembrar: && é and
+  {
+	  int k_up=GPIO_Read_Pin(GPIOA, PIN_0);
+	  int k0 = GPIO_Read_Pin(GPIOE, PIN_4);
+	  int k1 = GPIO_Read_Pin(GPIOE, PIN_3);
 
-	  if(!GPIO_Read_Pin(GPIOE, PIN_4) && GPIO_Read_Pin(GPIOE, PIN_3) && !GPIO_Read_Pin(GPIOE, PIN_2)){
-		  GPIO_Write_Pin(GPIOA, PIN_4, HIGH);  //LED DE PA4 NÃO FUNCIONA, ARRUMAR
-	  }
-	  else{
-		  GPIO_Write_Pin(GPIOA, PIN_4, LOW);
-	  }
+	  if(k_up == 1){
+		  GPIO_Toggle_Pin(GPIOD, PIN_0);
+		  Delay_ms(250);}
 
+	  if(k0 == 0){
+		  GPIO_Toggle_Pin(GPIOA, PIN_6);
+		  Delay_ms(250);}
 
-	  if(!GPIO_Read_Pin(GPIOE, PIN_3) && !GPIO_Read_Pin(GPIOE, PIN_2) && GPIO_Read_Pin(GPIOE, PIN_4)){
-		  GPIO_Write_Pin(GPIOA, PIN_3, HIGH);
-	  }
-	  else{
-		  GPIO_Write_Pin(GPIOA, PIN_3, LOW);
-	  }
+	  if(k1 == 0){
+		  GPIO_Toggle_Pin(GPIOA, PIN_7);
+		  Delay_ms(250);}
 
-
-	  if(GPIO_Read_Pin(GPIOE, PIN_2) && GPIO_Read_Pin(GPIOE, PIN_4) && GPIO_Read_Pin(GPIOE, PIN_3)){
-		  GPIO_Write_Pin(GPIOA, PIN_2, HIGH);
-	  }
-	  else{
-		  GPIO_Write_Pin(GPIOA, PIN_2, LOW);
-	  }
-	  }
-
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
-
+}
 
 /**
   * @brief System Clock Configuration
@@ -239,4 +230,4 @@ void assert_failed(uint8_t *file, uint32_t line)
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
-#endif /* USE_FULL_ASSERT */
+#endif /* USE_FULL_ASSERT */
