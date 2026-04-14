@@ -104,31 +104,55 @@ int main(void)
   /* USER CODE END 2 */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+	/* USER CODE BEGIN WHILE */
+	  while (1)
+	  {
+	      int k0 = !GPIO_Read_Pin(GPIOE, PIN_4);
+	      int k1 = !GPIO_Read_Pin(GPIOE, PIN_3);
 
-		int k0 = !GPIO_Read_Pin(GPIOE, PIN_4);
-		int k1 = !GPIO_Read_Pin(GPIOE, PIN_3);
-		int count = 0;
+	      GPIO_Write_Pin(GPIOA, PIN_6, HIGH);
 
-		while(k1)
-			k1 = !GPIO_Read_Pin(GPIOE, PIN_3);
+	      if (k0 && !k1)
+	      {
+	          int tempo_ms = 0;
+	          int bloqueado = 0;
 
-		while(k0)
-		{
-			k1 = !GPIO_Read_Pin(GPIOE, PIN_3);
-			if (k1 && count < 1000)
-			{
-				GPIO_Write_Pin(GPIOA, PIN_6, LOW);
-			}
-			k0 = !GPIO_Read_Pin(GPIOE, PIN_4);
-			count++;
-			Delay_ms(5);
-		}
+	          while (k0)
+	          {
+	              k1 = !GPIO_Read_Pin(GPIOE, PIN_3);
 
+	              if (k1)
+	              {
+	                  if (tempo_ms <= 1000 && !bloqueado)
+	                  {
+	                      GPIO_Write_Pin(GPIOA, PIN_6, LOW);
+	                  }
+	                  else
+	                  {
+	                      bloqueado = 1;
+	                  }
+	              }
+	              else
+	              {
+	                  GPIO_Write_Pin(GPIOA, PIN_6, HIGH);
+
+	                  if (tempo_ms > 1000)
+	                  {
+	                      bloqueado = 1;
+	                  }
+	              }
+
+	              if (tempo_ms <= 1000)
+	              {
+	                  tempo_ms += 5;
+	              }
+
+	              Delay_ms(5);
+	              k0 = !GPIO_Read_Pin(GPIOE, PIN_4);
+	          }
+	      }
 	  }
-
-    /* USER CODE END WHILE */
+	  /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
